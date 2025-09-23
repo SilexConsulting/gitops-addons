@@ -1,0 +1,24 @@
+##
+## Default BackupStorageLocation see: https://velero.io/docs/main/api-types/backupstoragelocation/
+##
+configuration:
+  backupStorageLocation:
+    - name:
+      provider: "aws"
+      bucket: "test-velero-cluster-backup"
+      default: false
+      credential:
+        name: "velero-aws-secrets"
+        key: "AWS_SECRET_ACCESS_KEY"
+      config:
+        region: us-west-1
+        profile: "default"
+  volumeSnapshotLocation:
+    - name:
+      provider: "aws"
+      credential:
+        name: "velero-aws-secrets"
+        key: "AWS_SECRET_ACCESS_KEY"
+      config:
+        region: us-west-1
+        profile: "default"
