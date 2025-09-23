@@ -1,0 +1,58 @@
+# This file defines the minimum set of required configuration keys for a standalone deployment with built-in authentication.
+# For the complete list, you can refer to the values.yaml file.
+
+# ------------------------
+# Global
+# ------------------------
+global:
+  veleroNamespace: velero
+  clusterName:  hub
+
+# ------------------------
+# API Service
+# ------------------------
+apiService:
+  config:
+    inspectBackupEnabled: false
+#  secret:
+  # defaultAdminUsername: "admin" # ⚠️ Change for production
+  # defaultAdminPassword: "admin" # ⚠️ Change for production
+
+# ------------------------
+# Watchdog Service
+# ------------------------
+watchdogService:
+  config:
+    apprise: "" # Apprise configuration for notifications
+
+# ------------------------
+# Exsposed Services
+# ------------------------
+exposure:
+  mode: nodePort # one of: nodePort, ingress, clusterIP
+  nodePort:
+    ip: 127.0.0.1
+    apiPort: 30001
+    uiPort: 30002
+#  clusterIP:
+#    protocol: http
+#    wsProtocol: ws
+#    localAddress: "127.0.0.1"
+#    apiPort:
+
+
+
+  ingress:
+    # ingressClassName: nginx
+
+    # metadata:
+    # annotations:
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    # nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    # nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    # ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    spec:
+      tls:
+        - hosts:
+            - vui.yourdomain.com
+          # secretName: vui-tls
