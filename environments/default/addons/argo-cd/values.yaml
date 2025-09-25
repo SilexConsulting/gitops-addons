@@ -1,0 +1,21 @@
+dex:
+  enabled: false
+notifications:
+  enabled: false
+
+global:
+  domain: argocd.cluster.local
+server:
+  service:
+    type: NodePort
+  ingress:
+    enabled: false
+    ingressClassName: nginx
+    tls: false
+  extensions:
+    enabled: true
+    extensionList:
+      - name: rollout-extension
+        env:
+          - name: EXTENSION_URL
+            value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.4/extension.tar
