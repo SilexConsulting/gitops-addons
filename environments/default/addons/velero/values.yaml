@@ -1,9 +1,6 @@
 ##
 ## Default BackupStorageLocation see: https://velero.io/docs/main/api-types/backupstoragelocation/
 ##
-kubectl:
-  image:
-    repository: docker.io/bitnamilegacy/kubectl
 configuration:
   backupStorageLocation:
     - name:

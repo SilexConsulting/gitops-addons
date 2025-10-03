@@ -1,0 +1,3 @@
+kubectl:
+  image:
+    repository: docker.io/bitnamilegacy/kubectl
