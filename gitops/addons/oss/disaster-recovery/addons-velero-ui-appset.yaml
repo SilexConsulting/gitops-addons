@@ -23,7 +23,7 @@ spec:
                     operator: In
                     values: ['true']
                 matchLabels:
-                  type: hub
+                  is_hub: "true"
           - clusters:
               selector:
                 matchLabels:

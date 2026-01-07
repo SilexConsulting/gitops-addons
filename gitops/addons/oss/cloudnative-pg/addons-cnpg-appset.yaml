@@ -25,7 +25,8 @@ spec:
                     values: ['true']
                   - key: type
                     operator: In
-                    values: ['workload']
+                    values:
+                      - workload
           - clusters:
               selector:
                 matchLabels:
@@ -60,4 +61,4 @@ spec:
         automated: {}
         syncOptions:
           - CreateNamespace=true
-          - ServerSideApply=true # Big CRDs.
+          - ServerSideApply=true  # Big CRDs.
