@@ -1,0 +1,23 @@
+# Local mirror of the shared CI (GIT-24). Run: pipx install pre-commit && pre-commit run -a
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+  - repo: local
+    hooks:
+      - id: sops-encrypted
+        name: "sops-encrypted (*.enc.yaml must be encrypted)"
+        entry: bash -c 'for f in "$@"; do grep -q "sops:" "$f" || grep -q "ENC\[" "$f" || { echo "not encrypted: $f"; exit 1; }; done' --
+        language: system
+        files: '\.enc\.yaml$'

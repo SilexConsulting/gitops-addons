@@ -1,0 +1,11 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  ci:
+    uses: SilexConsulting/.github/.github/workflows/gitops-ci.yml@main
+    with:
+      kubernetes: true
+      terraform: false
