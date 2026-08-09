@@ -1,4 +1,4 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-# Cluster-wide resources specific to ivylen. Empty is valid.
+# Addon-owned resources for this scope (e.g. a CNPG Cluster). Empty is valid.
 resources: []

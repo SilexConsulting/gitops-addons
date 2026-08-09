@@ -21,33 +21,34 @@ spec:
               values: ["true"]
   template:
     metadata:
-      name: addons-resources-{{.name}}
+      name: cluster-{{.name}}-addons-resources
     spec:
       project: default
-      # Three kustomize scopes, layered least→most specific (default → env → cluster).
-      # A resource applies only if it is listed in that scope's root kustomization.yaml,
-      # so a disabled owner's manifest (e.g. a CNPG Cluster where the operator is off) is
-      # simply left unlisted and never rendered.
+      # Addon-owned resources (e.g. a CNPG Cluster) — kept separate from cluster-wide resources
+      # (which live in the `resources/` tree and are delivered by the root-level `resources`
+      # appset). Three kustomize scopes, layered least→most specific (default → env → cluster).
+      # A resource applies only if listed in that scope's root kustomization.yaml, so a disabled
+      # owner's manifest (e.g. a CNPG Cluster where the operator is off) is simply left unlisted.
       sources:
         - repoURL: '{{.metadata.annotations.addons_repo_url}}'
           targetRevision: '{{.metadata.annotations.addons_repo_revision}}'
-          path: environments/default/resources
+          path: environments/default/addons-resources
           kustomize: {}
           # GIT-13 override: annotation-templated patches can be added here, e.g.
           # kustomize:
           #   patches:
-          #     - target: { kind: StorageClass }
+          #     - target: { kind: Cluster }
           #       patch: |
-          #         - op: add
-          #           path: /parameters/kmsKeyId
-          #           value: {{.metadata.annotations.ebs_kms_arn}}
+          #         - op: replace
+          #           path: /spec/instances
+          #           value: {{.metadata.annotations.cnpg_instances}}
         - repoURL: '{{.metadata.annotations.addons_repo_url}}'
           targetRevision: '{{.metadata.annotations.addons_repo_revision}}'
-          path: 'environments/{{.metadata.labels.env}}/resources'
+          path: 'environments/{{.metadata.labels.env}}/addons-resources'
           kustomize: {}
         - repoURL: '{{.metadata.annotations.addons_repo_url}}'
           targetRevision: '{{.metadata.annotations.addons_repo_revision}}'
-          path: 'clusters/{{.metadata.labels.cluster_name}}/resources'
+          path: 'clusters/{{.metadata.labels.cluster_name}}/addons-resources'
           kustomize: {}
       destination:
         server: '{{.server}}'
