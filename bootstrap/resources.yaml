@@ -1,0 +1,66 @@
+# nonk8s
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addon-resources
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  syncPolicy:
+    preserveResourcesOnDeletion: false
+  generators:
+    # Master switch: only clusters labelled enable_resources=true get the resources layer.
+    - merge:
+        mergeKeys: [server]
+        generators:
+          - clusters:
+              selector:
+                matchExpressions:
+                  - key: enable_resources
+                    operator: In
+                    values: ["true"]
+          # Env-specific value overrides can be merged here later, e.g.:
+          # - clusters:
+          #     selector: { matchLabels: { env: dev } }
+          #     values: { ... }
+  template:
+    metadata:
+      name: addon-resources-{{.name}}
+    spec:
+      project: default
+      # Three kustomize scopes, layered least→most specific (default → env → cluster).
+      # A resource applies only if it is listed in that scope's root kustomization.yaml,
+      # so a disabled owner's manifest (e.g. a CNPG Cluster where the operator is off) is
+      # simply left unlisted and never rendered.
+      sources:
+        - repoURL: '{{.metadata.annotations.addons_repo_url}}'
+          targetRevision: '{{.metadata.annotations.addons_repo_revision}}'
+          path: environments/default/resources
+          kustomize: {}
+          # GIT-13 override: annotation-templated patches can be added here, e.g.
+          # kustomize:
+          #   patches:
+          #     - target: { kind: StorageClass }
+          #       patch: |
+          #         - op: add
+          #           path: /parameters/kmsKeyId
+          #           value: {{.metadata.annotations.ebs_kms_arn}}
+        - repoURL: '{{.metadata.annotations.addons_repo_url}}'
+          targetRevision: '{{.metadata.annotations.addons_repo_revision}}'
+          path: 'environments/{{.metadata.labels.env}}/resources'
+          kustomize: {}
+        - repoURL: '{{.metadata.annotations.addons_repo_url}}'
+          targetRevision: '{{.metadata.annotations.addons_repo_revision}}'
+          path: 'clusters/{{.metadata.labels.cluster_name}}/resources'
+          kustomize: {}
+      destination:
+        server: '{{.server}}'
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true # CRD instances can be large.

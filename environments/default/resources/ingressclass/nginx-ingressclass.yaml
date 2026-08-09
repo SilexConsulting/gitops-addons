@@ -1,0 +1,12 @@
+# Cluster-wide resource with no add-on/workload owner — a plain IngressClass.
+# Safe to apply anywhere (inert until a matching controller runs), so it lives in the
+# indiscriminate `environments/default/resources` scope. Not marked default to avoid
+# clobbering any controller-managed default IngressClass.
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+  annotations:
+    argocd.argoproj.io/sync-wave: "10" # reconcile after operators/workloads
+spec:
+  controller: k8s.io/ingress-nginx
