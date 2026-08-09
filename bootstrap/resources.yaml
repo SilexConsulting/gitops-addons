@@ -11,19 +11,14 @@ spec:
     preserveResourcesOnDeletion: false
   generators:
     # Master switch: only clusters labelled enable_resources=true get the resources layer.
-    - merge:
-        mergeKeys: [server]
-        generators:
-          - clusters:
-              selector:
-                matchExpressions:
-                  - key: enable_resources
-                    operator: In
-                    values: ["true"]
-          # Env-specific value overrides can be merged here later, e.g.:
-          # - clusters:
-          #     selector: { matchLabels: { env: dev } }
-          #     values: { ... }
+    # (A single clusters generator — env-specific value overrides would need a merge of two+
+    # generators; layering here is done via the kustomize scope paths instead.)
+    - clusters:
+        selector:
+          matchExpressions:
+            - key: enable_resources
+              operator: In
+              values: ["true"]
   template:
     metadata:
       name: addon-resources-{{.name}}
