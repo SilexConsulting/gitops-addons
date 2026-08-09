@@ -1,5 +1,14 @@
 extends: relaxed
 rules:
   line-length: disable
-  trailing-spaces: enable
-  new-line-at-end-of-file: enable
+  document-start: disable
+  trailing-spaces:
+    level: warning
+  new-line-at-end-of-file:
+    level: warning
+# Helm chart templates and encrypted files are not plain YAML.
+ignore: |
+  **/charts/**
+  **/templates/**
+  *.enc.yaml
+  demo/**

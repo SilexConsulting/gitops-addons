@@ -17,7 +17,7 @@ repos:
   - repo: local
     hooks:
       - id: sops-encrypted
-        name: "sops-encrypted (*.enc.yaml must be encrypted)"
-        entry: bash -c 'for f in "$@"; do grep -q "sops:" "$f" || grep -q "ENC\[" "$f" || { echo "not encrypted: $f"; exit 1; }; done' --
+        name: "sops-encrypted (enc.yaml must be encrypted)"
+        entry: "bash -c 'for f in \"$@\"; do grep -Eq \"sops:|ENC\\[\" \"$f\" || { echo \"not-encrypted $f\"; exit 1; }; done' --"
         language: system
-        files: '\.enc\.yaml$'
+        files: "\\.enc\\.yaml$"
