@@ -1,0 +1,5 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Scope stub — no manifests yet. Required so the resources appset's kustomize source for this
+# scope resolves (a missing path would fail the Application). Add manifests + list them here.
+resources: []
