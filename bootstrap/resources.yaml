@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: addon-resources
+  name: addons-resources
   namespace: argocd
 spec:
   goTemplate: true
@@ -21,7 +21,7 @@ spec:
               values: ["true"]
   template:
     metadata:
-      name: addon-resources-{{.name}}
+      name: addons-resources-{{.name}}
     spec:
       project: default
       # Three kustomize scopes, layered least→most specific (default → env → cluster).

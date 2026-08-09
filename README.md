@@ -9,7 +9,7 @@ Please consult the README.md in that repository for more information.
 
 Operator-backed CRD instances and cluster-wide objects (e.g. a CloudNativePG `Cluster`, an
 `IngressClass`) are declared as plain manifests under a `resources/` tree and applied by the
-`addon-resources` ApplicationSet in `bootstrap/resources.yaml`:
+`addons-resources` ApplicationSet in `bootstrap/resources.yaml`:
 
 - `environments/default/resources/` — applied to every cluster labelled `enable_resources=true`
 - `environments/<env>/resources/` — per-environment
