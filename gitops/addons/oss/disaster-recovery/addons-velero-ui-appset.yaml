@@ -15,7 +15,7 @@ spec:
           - clusters:
               values:
                 addonChart: velero-ui
-                addonChartVersion: 0.14.0
+                addonChartVersion: 0.15.0
                 addonChartRepository: https://helm.otwld.com/
               selector:
                 matchExpressions:
