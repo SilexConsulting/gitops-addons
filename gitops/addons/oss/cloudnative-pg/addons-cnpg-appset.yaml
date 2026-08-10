@@ -15,7 +15,7 @@ spec:
           - clusters:
               values:
                 addonChart: cloudnative-pg
-                addonChartVersion: 0.26.0
+                addonChartVersion: 0.29.0
                 addonChartRepository: https://cloudnative-pg.io/charts/
                 replicaCount: "3"
               selector:
