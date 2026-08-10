@@ -15,7 +15,7 @@ spec:
           - clusters:
               values:
                 addonChart: velero
-                addonChartVersion: 11.0.0
+                addonChartVersion: 12.1.0
                 addonChartRepository: https://vmware-tanzu.github.io/helm-charts
               selector:
                 matchExpressions:
