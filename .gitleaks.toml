@@ -1,0 +1,11 @@
+# gitleaks config for CI (GIT-24). Extends the default ruleset; allowlists files that
+# legitimately contain key-shaped placeholders or ciphertext (not real plaintext secrets).
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documented example secret template + SOPS-encrypted files"
+paths = [
+  '''bootstrap/argocd/secrets\.yaml$''',   # example (real secrets live in secrets.enc.yaml, SOPS)
+  '''.*\.enc\.yaml$''',                     # SOPS-encrypted
+]
