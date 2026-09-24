@@ -1,0 +1,15 @@
+# Reference operator-backed resource: a CloudNativePG database Cluster.
+# Owner: the cloudnative-pg add-on (installed via addons-cnpg-appset, gated on enable_cnpg).
+# This manifest is listed only in ivylen's cluster scope, so it is never rendered onto
+# clusters where CNPG is not enabled.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: demo-db
+  namespace: databases
+  annotations:
+    argocd.argoproj.io/sync-wave: "10" # after the operator/CRD and the namespace
+spec:
+  instances: 1
+  storage:
+    size: 1Gi

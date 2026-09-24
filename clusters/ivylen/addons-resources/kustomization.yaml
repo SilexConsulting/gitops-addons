@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Cluster-scoped resources for the ivylen cluster.
+# The CNPG Cluster (a database) is an ADD-ON-OWNED resource: it only makes sense where the
+# CloudNativePG operator add-on is enabled. It is listed here (not in the indiscriminate
+# default scope) so it is only rendered onto ivylen — the enablement chain in action.
+# NOTE: requires enable_cnpg on ivylen (see GIT-23) for the operator/CRD to be present;
+# until then Argo retries harmlessly (eventual consistency).
+resources:
+  - cnpg/namespace.yaml
+  - cnpg/demo-db.yaml
