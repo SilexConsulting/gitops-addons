@@ -6,7 +6,10 @@ metadata:
   namespace: argocd
 spec:
   syncPolicy:
-    preserveResourcesOnDeletion: false
+    # This app manages Argo CD itself (release argo-cd in argocd). A cascading delete of it (or
+    # the appset dropping it, e.g. enable_argocd removed) would delete Argo CD. With `true` the
+    # generated apps carry no resources-finalizer, so deletion orphans resources instead.
+    preserveResourcesOnDeletion: true
   generators:
     - merge:
         mergeKeys: [server]
