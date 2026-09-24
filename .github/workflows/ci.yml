@@ -5,7 +5,7 @@ on:
     branches: [main]
 jobs:
   ci:
-    uses: SilexConsulting/.github/.github/workflows/gitops-ci.yml@main
+    uses: SilexConsulting/.github/.github/workflows/gitops-ci.yml@e1d69d56c1e82ea06b33ace7731ed81d800e9939 # main
     with:
       kubernetes: true
       terraform: false
