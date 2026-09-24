@@ -7,7 +7,11 @@ metadata:
   namespace: argocd
 spec:
   syncPolicy:
-    preserveResourcesOnDeletion: false
+    # GIT-30: never cascade-delete CNPG. The chart templates the CRDs, so a cascading delete of
+    # this app (or the appset dropping it, e.g. enable_cnpg removed) would delete the CRDs ->
+    # every Cluster -> their PVCs (owned by the Cluster) -> the data (Longhorn reclaim=Delete).
+    # With `true` the generated apps carry no resources-finalizer, so deletion orphans resources.
+    preserveResourcesOnDeletion: true
   generators:
     - merge:
         mergeKeys: [server]
