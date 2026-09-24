@@ -1,0 +1,6 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Indiscriminate resources — applied to every cluster labelled enable_resources=true.
+# Only list manifests that are safe on any cluster (no operator/workload dependency).
+resources:
+  - ingressclass/nginx-ingressclass.yaml

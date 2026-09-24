@@ -1,0 +1,62 @@
+# nonk8s
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addons-resources
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  syncPolicy:
+    preserveResourcesOnDeletion: false
+  generators:
+    # Master switch: only clusters labelled enable_resources=true get the resources layer.
+    # (A single clusters generator — env-specific value overrides would need a merge of two+
+    # generators; layering here is done via the kustomize scope paths instead.)
+    - clusters:
+        selector:
+          matchExpressions:
+            - key: enable_resources
+              operator: In
+              values: ["true"]
+  template:
+    metadata:
+      name: cluster-{{.name}}-addons-resources
+    spec:
+      project: default
+      # Addon-owned resources (e.g. a CNPG Cluster) — kept separate from cluster-wide resources
+      # (which live in the `resources/` tree and are delivered by the root-level `resources`
+      # appset). Three kustomize scopes, layered least→most specific (default → env → cluster).
+      # A resource applies only if listed in that scope's root kustomization.yaml, so a disabled
+      # owner's manifest (e.g. a CNPG Cluster where the operator is off) is simply left unlisted.
+      sources:
+        - repoURL: '{{.metadata.annotations.addons_repo_url}}'
+          targetRevision: '{{.metadata.annotations.addons_repo_revision}}'
+          path: environments/default/addons-resources
+          kustomize: {}
+          # GIT-13 override: annotation-templated patches can be added here, e.g.
+          # kustomize:
+          #   patches:
+          #     - target: { kind: Cluster }
+          #       patch: |
+          #         - op: replace
+          #           path: /spec/instances
+          #           value: {{.metadata.annotations.cnpg_instances}}
+        - repoURL: '{{.metadata.annotations.addons_repo_url}}'
+          targetRevision: '{{.metadata.annotations.addons_repo_revision}}'
+          path: 'environments/{{.metadata.labels.env}}/addons-resources'
+          kustomize: {}
+        - repoURL: '{{.metadata.annotations.addons_repo_url}}'
+          targetRevision: '{{.metadata.annotations.addons_repo_revision}}'
+          path: 'clusters/{{.metadata.labels.cluster_name}}/addons-resources'
+          kustomize: {}
+      destination:
+        server: '{{.server}}'
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true # CRD instances can be large.
