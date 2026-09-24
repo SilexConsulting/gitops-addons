@@ -3,8 +3,16 @@ dex:
 notifications:
   enabled: false
 
+# Argo CD manages itself: this is the default config every self-managed Argo CD converges to
+# after the Terraform bootstrap (which only seeds the install). Keep the control-plane
+# `argocd_helm_values` seeds in step with the shared baseline below.
 global:
   domain: argocd.cluster.local
+  addPrometheusAnnotations: true
+controller:
+  logFormat: json
+  metrics:
+    enabled: true
 server:
   service:
     type: NodePort
