@@ -33,6 +33,18 @@ spec:
                   environment: dev
               values:
                 replicaCount: "1"
+          # GIT-30: ivylen adopts a pre-existing, out-of-band CNPG operator (TrueCharts wrapper
+          # around the official chart 0.19.1 / operator 1.21.1, default values, 1 replica) that
+          # backs the Paperless database. Pin to exactly what is running so the Argo takeover is
+          # a no-op; upgrade deliberately (Renovate) after a Paperless backup. Never `helm
+          # uninstall` the old release — its CRDs are templated, so that would delete every Cluster.
+          - clusters:
+              selector:
+                matchLabels:
+                  cluster_name: ivylen
+              values:
+                addonChartVersion: 0.19.1
+                replicaCount: "1"
   template:
     metadata:
       name: addon-{{name}}-{{values.addonChart}}
