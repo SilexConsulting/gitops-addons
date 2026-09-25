@@ -22,5 +22,4 @@ resources: []
 #  - recurringjob-backup-daily.example.yaml      # needs a backup target
 #  - recurringjob-snapshot-hourly.example.yaml
 #  - storageclass-retain.example.yaml           # for data that must survive a PVC deletion
-#  - storageclass-distro-default-off.example.yaml  # unflag the distro's default StorageClass
 #  - externalsecret-backup-credentials.example.yaml  # the S3 credentials via external-secrets (GIT-6)

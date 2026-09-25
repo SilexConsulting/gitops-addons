@@ -1,0 +1,6 @@
+---
+# Longhorn on KinD: nothing distro-specific (KinD nodes lack open-iscsi, so Longhorn is not really
+# usable there anyway; kind's own `standard` class stays the default).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: []

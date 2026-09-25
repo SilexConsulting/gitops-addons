@@ -1,0 +1,15 @@
+---
+# The MicroK8s `hostpath-storage` add-on marks `microk8s-hostpath` default; Longhorn's chart marks
+# `longhorn` default. Two defaults → Kubernetes picks the newest, unpredictably. While Longhorn is
+# installed it is the default (replicated, backed up), and this node-local class stays available by
+# name only. Field-for-field copy of the add-on's object (StorageClass fields are immutable), only the
+# annotation differs. If Longhorn is removed, re-flag it by hand (Delete=false leaves it as is).
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: microk8s-hostpath
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: microk8s.io/hostpath
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
