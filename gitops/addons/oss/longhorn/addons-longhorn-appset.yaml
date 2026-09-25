@@ -61,6 +61,13 @@ spec:
               - $values/environments/default/addons/{{values.addonChart}}/values.yaml
               - $values/environments/{{metadata.labels.environment}}/addons/{{values.addonChart}}/values.yaml
               - $values/clusters/{{name}}/addons/{{values.addonChart}}/values.yaml
+        # Distro-specific addon-owned resources (e.g. unflag MicroK8s' default StorageClass): public,
+        # generic per distro, and synced by this Application so they exist iff Longhorn is enabled.
+        # Every `distro` label in use needs a folder — see
+        # environments/default/addons/longhorn/distros/README.md.
+        - repoURL: '{{metadata.annotations.addons_repo_url}}'
+          targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+          path: environments/default/addons/{{values.addonChart}}/distros/{{metadata.labels.distro}}
       destination:
         namespace: '{{values.addonChartNamespace}}'
         name: '{{name}}'

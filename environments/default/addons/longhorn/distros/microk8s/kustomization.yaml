@@ -1,0 +1,8 @@
+---
+# Longhorn on MicroK8s. Never prune/delete: these patch distro-owned objects that stay in use.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonAnnotations:
+  argocd.argoproj.io/sync-options: Prune=false,Delete=false
+resources:
+  - storageclass-microk8s-hostpath.yaml
