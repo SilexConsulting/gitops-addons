@@ -1,7 +1,0 @@
----
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-# Addon-owned resources for metallb, synced by the addon's Application -> they exist iff the addon
-# is enabled. Site-specific pools/peers come from the cluster's private repo (same pattern).
-resources:
-  - namespace.yaml

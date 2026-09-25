@@ -7,7 +7,7 @@ Please consult the README.md in that repository for more information.
 
 ## Addon-owned resources (exist iff the addon is enabled)
 
-Resources that belong to one addon (its namespace, generic CRs such as a `ClusterSecretStore`) live
+Resources that belong to one addon (generic CRs such as an external-secrets `ClusterSecretStore`) live
 **with the addon**, in `environments/default/addons/<addon>/resources/kustomization.yaml`. The addon's
 ApplicationSet points its first source (the catalogue repo, `ref: values`) at that folder:
 
@@ -22,9 +22,11 @@ sources:
 
 so the resources are synced by the addon's own Application: they are created **if and only if** the
 addon is enabled on the cluster (no separate appset, nothing created on clusters without the addon).
-Examples: `velero` (namespace), `metallb` (privileged `metallb-system` namespace). Site-specific
+Namespaces don't need this: the addon's `CreateNamespace=true` already creates it iff the addon is
+enabled (add labels via `syncPolicy.managedNamespaceMetadata`, e.g. metallb's Pod Security labels).
+Only give an addon a `resources/` path when it has resources to list (the folder must exist). Site-specific
 resources (e.g. a cluster's MetalLB address pools / BGP peers) come from the cluster's private repo in
-the same way. Mark anything whose loss would hurt with `argocd.argoproj.io/sync-options: Delete=false`.
+the same way (`addons/clusters/<cluster>/<addon>/resources`). Mark anything whose loss would hurt with `argocd.argoproj.io/sync-options: Delete=false`.
 
 ## Resources (GIT-20)
 

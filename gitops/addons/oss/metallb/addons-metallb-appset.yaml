@@ -38,8 +38,6 @@ spec:
         - repoURL: '{{metadata.annotations.addons_repo_url}}'
           targetRevision: '{{metadata.annotations.addons_repo_revision}}'
           ref: values
-          # Addon-owned resources (namespace; generic config): exist iff this addon is enabled.
-          path: environments/default/addons/{{values.addonChart}}/resources
         - chart: '{{values.addonChart}}'
           repoURL: '{{values.addonChartRepository}}'
           targetRevision: '{{values.addonChartVersion}}'
@@ -62,6 +60,14 @@ spec:
             duration: 10s
             factor: 2
             maxDuration: 3m
+        # The namespace is created by Argo (CreateNamespace), so it exists iff the addon is enabled.
+        # The speaker needs hostNetwork + NET_RAW: label it privileged in case the cluster enforces
+        # a stricter Pod Security default.
+        managedNamespaceMetadata:
+          labels:
+            pod-security.kubernetes.io/enforce: privileged
+            pod-security.kubernetes.io/audit: privileged
+            pod-security.kubernetes.io/warn: privileged
         syncOptions:
           - CreateNamespace=true
           - ServerSideApply=true # Big CRDs.
