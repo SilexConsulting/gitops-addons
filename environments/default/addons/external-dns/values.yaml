@@ -9,7 +9,9 @@
 # zone that also holds hand-made records: noop treats every record in the domain filter as its own.
 
 # Opt-in per Service: only LoadBalancer Services annotated with
-#   external-dns.alpha.kubernetes.io/hostname: <name>.<zone>
+#   external-dns.kubernetes.io/hostname: <name>.<zone>
+# (since v0.22 the default prefix is `external-dns.kubernetes.io/`; the old
+# `external-dns.alpha.kubernetes.io/` annotations found in most docs/charts are silently ignored)
 # get a record (A -> the Service's external IP, e.g. from MetalLB). Ingresses/Gateways are not sources
 # by default; add them per cluster once an ingress controller publishes its real address in
 # `.status.loadBalancer` (MicroK8s' NGINX add-on reports 127.0.0.1).
