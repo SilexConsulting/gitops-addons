@@ -1,0 +1,59 @@
+---
+# ExternalDNS catalogue defaults. The DNS provider (and its credentials), the zone(s) to manage and the
+# provider's address are site-specific: set them per cluster (private repo). `txtOwnerId` is set to the
+# cluster name by the appset.
+#
+# Safety model: `registry: txt` makes ExternalDNS write an ownership TXT record next to every record it
+# creates, and only ever update/delete records carrying its own owner id. Hand-made records in the same
+# zone are therefore never touched, even with `policy: sync`. Don't switch to `registry: noop` on a
+# zone that also holds hand-made records: noop treats every record in the domain filter as its own.
+
+# Opt-in per Service: only LoadBalancer Services annotated with
+#   external-dns.alpha.kubernetes.io/hostname: <name>.<zone>
+# get a record (A -> the Service's external IP, e.g. from MetalLB). Ingresses/Gateways are not sources
+# by default; add them per cluster once an ingress controller publishes its real address in
+# `.status.loadBalancer` (MicroK8s' NGINX add-on reports 127.0.0.1).
+sources:
+  - service
+
+# sync: create, update AND delete (owned) records, so a removed Service/annotation removes its record.
+policy: sync
+registry: txt
+
+# --- Provider: pick ONE per cluster (reference setups, commented out) ---------------------------------
+#
+# OPNsense Unbound (LAN DNS) via the community webhook provider
+# (https://github.com/crutonjohn/external-dns-opnsense-webhook). Records become Unbound Host Overrides.
+# Needs OPNsense >= 25.7 for the TXT ownership records. API user privileges: "Services: Unbound DNS:
+# Edit Host and Domain Override", "Services: Unbound (MVC)", "Status: DNS Overview". Credential Secret
+# keys: api_key, api_secret.
+#
+# domainFilters: [example.com]
+# provider:
+#   name: webhook
+#   webhook:
+#     image:
+#       repository: ghcr.io/crutonjohn/external-dns-opnsense-webhook
+#       tag: v1.0.0
+#     env:
+#       - name: OPNSENSE_HOST
+#         value: https://192.0.2.1          # must be reachable from pods
+#       - name: OPNSENSE_SKIP_TLS_VERIFY
+#         value: "true"                     # OPNsense's self-signed GUI certificate
+#       - name: OPNSENSE_API_KEY
+#         valueFrom: {secretKeyRef: {name: external-dns-opnsense, key: api_key}}
+#       - name: OPNSENSE_API_SECRET
+#         valueFrom: {secretKeyRef: {name: external-dns-opnsense, key: api_secret}}
+#     livenessProbe:
+#       httpGet: {path: /healthz, port: http-webhook}
+#     readinessProbe:
+#       httpGet: {path: /readyz, port: http-webhook}
+#
+# Cloudflare (public DNS):
+#
+# domainFilters: [example.com]
+# provider:
+#   name: cloudflare
+# env:
+#   - name: CF_API_TOKEN
+#     valueFrom: {secretKeyRef: {name: cloudflare-api-token, key: api-token}}
