@@ -1,4 +1,5 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 # Cluster-wide resources specific to ivylen. Empty is valid.
-resources: []
+resources:
+  - storageclass/microk8s-hostpath.yaml # GIT-18: single default StorageClass (Longhorn)

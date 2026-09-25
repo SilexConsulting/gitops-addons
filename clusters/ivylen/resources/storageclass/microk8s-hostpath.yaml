@@ -1,0 +1,17 @@
+---
+# GIT-18: ivylen had TWO default StorageClasses (this one and Longhorn's). Kubernetes then picks the
+# most recently created default — Longhorn today, silently something else tomorrow. Longhorn (replicated,
+# backed up to S3) is the default; this node-local class stays available by name only.
+# The object itself is created by the MicroK8s `hostpath-storage` add-on (distro-provided): copied here
+# field-for-field so Argo only changes the default-class annotation. Never prune/delete it — PVCs
+# still use it (e.g. Paperless' `consume`).
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: microk8s-hostpath
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
+provisioner: microk8s.io/hostpath
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
