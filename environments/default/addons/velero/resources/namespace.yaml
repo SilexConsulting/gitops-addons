@@ -1,0 +1,14 @@
+---
+# Created with (and only with) the velero addon: this folder is synced by the addon's own
+# Application (first source path), so it exists iff enable_velero is set on the cluster.
+# Delete=false: removing the addon must never delete the namespace (and the Backup/Restore
+# objects in it); clean it up deliberately.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: velero
+  labels:
+    name: velero
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-options: Delete=false

@@ -1,0 +1,9 @@
+---
+# MetalLB catalogue defaults. Site-specific config (address pools, BGP peers, advertisements) is
+# NOT set here: it is cluster data, shipped as addon resources from the cluster's private repo
+# (or cluster scope) so it exists iff the addon is enabled.
+#
+# BGP backend: native (as MetalLB <=0.14 / MicroK8s' v0.13 did). The chart defaults to frr-k8s;
+# switch per cluster with `frrk8s.enabled: true` if BFD/advanced BGP is needed.
+frrk8s:
+  enabled: false

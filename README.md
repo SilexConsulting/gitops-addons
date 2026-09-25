@@ -5,6 +5,27 @@ used in conjunction with https://github.com/SilexConsulting/gitops-control-plane
 
 Please consult the README.md in that repository for more information.
 
+## Addon-owned resources (exist iff the addon is enabled)
+
+Resources that belong to one addon (its namespace, generic CRs such as a `ClusterSecretStore`) live
+**with the addon**, in `environments/default/addons/<addon>/resources/kustomization.yaml`. The addon's
+ApplicationSet points its first source (the catalogue repo, `ref: values`) at that folder:
+
+```yaml
+sources:
+  - repoURL: '{{metadata.annotations.addons_repo_url}}'
+    targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+    ref: values
+    path: environments/default/addons/{{values.addonChart}}/resources
+  - chart: ...   # the addon's Helm chart
+```
+
+so the resources are synced by the addon's own Application: they are created **if and only if** the
+addon is enabled on the cluster (no separate appset, nothing created on clusters without the addon).
+Examples: `velero` (namespace), `metallb` (privileged `metallb-system` namespace). Site-specific
+resources (e.g. a cluster's MetalLB address pools / BGP peers) come from the cluster's private repo in
+the same way. Mark anything whose loss would hurt with `argocd.argoproj.io/sync-options: Delete=false`.
+
 ## Resources (GIT-20)
 
 Raw manifests (not Helm charts) are declared under `resources/` trees and reconciled last, gated
