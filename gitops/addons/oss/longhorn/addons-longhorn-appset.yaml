@@ -4,6 +4,8 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: addons-longhorn
+  # Operations (adoption, S3 backups, restore, DR drill, troubleshooting):
+  # environments/default/addons/longhorn/README.md
   namespace: argocd
 spec:
   syncPolicy:
