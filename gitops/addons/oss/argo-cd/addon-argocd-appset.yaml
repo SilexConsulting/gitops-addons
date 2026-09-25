@@ -49,6 +49,21 @@ spec:
               - $values/environments/default/addons/{{values.addonChart}}/values.yaml
               - $values/environments/{{metadata.labels.environment}}/addons/{{values.addonChart}}/values.yaml
               - $values/clusters/{{name}}/addons/{{values.addonChart}}/values.yaml
+            # Register the (public) catalogue repos in Argo CD's repository list, from each
+            # cluster's own annotations so the URLs always match what the apps use. HTTPS, no
+            # credentials (they're public), so the chart-rendered Secrets hold nothing sensitive.
+            # Private repos (gitops-private) keep their SOPS-managed Secrets.
+            values: |
+              configs:
+                repositories:
+                  gitops-addons:
+                    url: '{{metadata.annotations.addons_repo_url}}'
+                    type: git
+                    name: gitops-addons
+                  gitops-workloads:
+                    url: '{{metadata.annotations.workloads_repo_url}}'
+                    type: git
+                    name: gitops-workloads
       destination:
         namespace: '{{values.addonChartNamespace}}'
         name: '{{name}}'
