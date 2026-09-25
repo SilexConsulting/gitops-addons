@@ -1,0 +1,23 @@
+---
+# Longhorn catalogue defaults. Site-specific settings (data path, replica count vs. node count, backup
+# target) are NOT set here: they are cluster values in the cluster's private repo. Backup schedules
+# (RecurringJobs) and extra StorageClasses are addon-owned resources (see ./resources/).
+#
+# Distro notes (set per cluster):
+#   - MicroK8s runs the kubelet under the snap: `csi.kubeletRootDir: /var/snap/microk8s/common/var/lib/kubelet`
+#     (otherwise CSI mounts silently fail). k3s/RKE2/kubeadm use the default.
+#   - Replica count should not exceed the number of storage nodes (`persistence.defaultClassReplicaCount`
+#     for the chart's StorageClass, `defaultSettings.defaultReplicaCount` for volumes created in the UI),
+#     or every volume stays `degraded`.
+
+# The pre-upgrade checker is a Helm pre-upgrade hook; under Argo CD it becomes a PreSync Job on every
+# sync. Longhorn's docs say to disable it for Argo CD / GitOps installs.
+preUpgradeChecker:
+  jobEnabled: false
+
+defaultSettings:
+  # The chart's `longhorn-uninstall` Job is a Helm pre-delete hook, which Argo CD (>= 3.x) runs as a
+  # PreDelete hook when the Application is deleted. With this flag false the Job refuses to uninstall,
+  # so deleting the Application can never wipe the volumes. Keep it false; flip it by hand only when
+  # you really mean to remove Longhorn and all its data.
+  deletingConfirmationFlag: false

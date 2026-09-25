@@ -1,0 +1,18 @@
+---
+# Daily backup of every volume in the `default` group to the backup target (e.g. S3), keeping 14.
+# Backups are incremental (block-level) and independent of the cluster: a new cluster pointed at the
+# same target can restore them.
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: backup-daily
+  namespace: longhorn-system
+spec:
+  task: backup
+  cron: "0 2 * * *"
+  retain: 14
+  concurrency: 2
+  groups:
+    - default
+  labels: {}
+  parameters: {}

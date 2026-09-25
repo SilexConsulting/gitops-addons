@@ -1,0 +1,25 @@
+---
+# Longhorn addon-owned resources (commented-out reference setup).
+#
+# Synced by the longhorn addon's own Application ONLY if the `path:` on the first source of
+# gitops/addons/oss/longhorn/addons-longhorn-appset.yaml is uncommented, so they exist iff the addon
+# is enabled. They are usually site-specific: copy the examples into your cluster's private repo
+# (<private>/addons/clusters/<cluster>/longhorn/resources/) instead of listing them here.
+#
+# Backups: set the target in the cluster's values (`defaultBackupStore.backupTarget` /
+# `backupTargetCredentialSecret`); the credentials Secret itself never goes in Git in clear (SOPS-seed
+# it or use external-secrets). Then schedule backups with RecurringJobs. Volumes join a job's group
+# via the `recurring-job-group.longhorn.io/<group>: enabled` label; every volume is in `default`
+# unless given other groups, and StorageClasses can set `recurringJobSelector`.
+#
+# Keep Argo from ever deleting these: a pruned RecurringJob silently stops the backups.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: "1" # after the chart's CRDs
+  argocd.argoproj.io/sync-options: Prune=false,Delete=false,SkipDryRunOnMissingResource=true
+resources: []
+#  - recurringjob-backup-daily.example.yaml      # needs a backup target
+#  - recurringjob-snapshot-hourly.example.yaml
+#  - storageclass-retain.example.yaml           # for data that must survive a PVC deletion
+#  - externalsecret-backup-credentials.example.yaml  # the S3 credentials via external-secrets (GIT-6)
