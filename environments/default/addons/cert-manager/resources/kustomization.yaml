@@ -1,0 +1,23 @@
+---
+# cert-manager addon-owned resources (commented-out reference setup).
+#
+# Synced by the cert-manager addon's own Application ONLY if the `path:` on the first source of
+# gitops/addons/oss/cert-manager/addons-cert-manager-appset.yaml is uncommented, so they exist iff
+# the addon is enabled. Issuers are usually site-specific (ACME email, DNS provider): copy an example
+# into your cluster's private repo (<private>/addons/clusters/<cluster>/cert-manager/resources/).
+#
+# Which solver?
+#   - HTTP-01: the name must be publicly reachable on :80 through an ingress controller. Simplest.
+#   - DNS-01:  proves control of the DNS zone via an API token; works for internal-only names and
+#              wildcards. Needs a credential Secret (never in Git: SOPS-seed it or use ExternalSecrets).
+# Always try the Let's Encrypt STAGING issuer first: production has strict rate limits.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: "1" # after the chart's CRDs + webhook
+  argocd.argoproj.io/sync-options: Prune=false,Delete=false,SkipDryRunOnMissingResource=true
+resources: []
+#  - clusterissuer-letsencrypt-http01.example.yaml       # public names via an ingress
+#  - clusterissuer-letsencrypt-dns01-cloudflare.example.yaml
+#  - externalsecret-cloudflare-token.example.yaml        # the DNS token via external-secrets (GIT-6)
+#  - clusterissuer-selfsigned-ca.example.yaml            # internal CA (no ACME)

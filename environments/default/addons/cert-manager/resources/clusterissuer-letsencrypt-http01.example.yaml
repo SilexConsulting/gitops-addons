@@ -1,0 +1,17 @@
+---
+# Let's Encrypt via HTTP-01, solved through an ingress class. Swap the server URL to
+# https://acme-v02.api.letsencrypt.org/directory (and the name) for production.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging-http01
+spec:
+  acme:
+    email: admin@example.com # expiry/problem notices from Let's Encrypt
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-staging-http01 # ACME account key, created by cert-manager
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: traefik # or nginx, ...

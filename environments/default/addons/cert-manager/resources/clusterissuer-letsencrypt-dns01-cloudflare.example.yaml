@@ -1,0 +1,22 @@
+---
+# Let's Encrypt via DNS-01 on Cloudflare. Create a Cloudflare API *token* (not the global key) with
+# Zone:Read + DNS:Edit on the zone, stored in Secret cloudflare-api-token-secret (key api-token) in
+# the cert-manager namespace: SOPS-seeded, or via externalsecret-cloudflare-token.example.yaml.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    email: admin@example.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+      - dns01:
+          cloudflare:
+            apiTokenSecretRef:
+              name: cloudflare-api-token-secret
+              key: api-token
+        # selector:
+        #   dnsZones: [example.com]   # restrict this solver to one zone

@@ -1,0 +1,12 @@
+---
+# cert-manager catalogue defaults. Issuers are NOT configured here: they are site-specific
+# addon-owned resources (see ./resources/ and the appset comments).
+crds:
+  enabled: true # CRDs are part of the release (templated)...
+  keep: true # ...and carry helm.sh/resource-policy: keep
+# The post-install API check is a Helm hook; under Argo it becomes a hook Job re-run on every sync.
+startupapicheck:
+  enabled: false
+prometheus:
+  servicemonitor:
+    enabled: false # enable per cluster once the monitoring addon (GIT-4/GIT-22) exists
