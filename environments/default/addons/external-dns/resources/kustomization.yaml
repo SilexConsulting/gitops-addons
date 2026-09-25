@@ -1,0 +1,15 @@
+---
+# ExternalDNS addon-owned resources (commented-out reference setup).
+#
+# Synced by the external-dns addon's own Application ONLY if the `path:` on the first source of
+# gitops/addons/oss/external-dns/addons-external-dns-appset.yaml is uncommented, so they exist iff the
+# addon is enabled. The only resource ExternalDNS needs is its DNS provider credential Secret, which is
+# site-specific and never in plain Git: SOPS-encrypt it in your cluster's private repo and apply it
+# out-of-band, or deliver it with an ExternalSecret (GIT-6) from
+# <private>/addons/clusters/<cluster>/external-dns/resources/.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonAnnotations:
+  argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+resources: []
+#  - externalsecret-opnsense.example.yaml
