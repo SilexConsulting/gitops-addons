@@ -1,0 +1,35 @@
+---
+# An internal CA: a self-signed root, then a CA ClusterIssuer that signs with it. For internal
+# services where public trust isn't needed (clients must trust the root: kubectl get secret
+# -n cert-manager internal-ca -o jsonpath='{.data.ca\.crt}' | base64 -d).
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: internal-ca
+  namespace: cert-manager
+spec:
+  isCA: true
+  commonName: internal-ca
+  secretName: internal-ca
+  duration: 87600h # 10 years
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    kind: ClusterIssuer
+    name: selfsigned
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: internal-ca
+spec:
+  ca:
+    secretName: internal-ca # ClusterIssuer CA secrets are read from the cert-manager namespace
