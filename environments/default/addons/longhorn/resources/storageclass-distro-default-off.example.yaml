@@ -1,0 +1,16 @@
+---
+# Many distros ship their own default StorageClass (MicroK8s `microk8s-hostpath`, k3s `local-path`...).
+# With Longhorn's chart also marking `longhorn` default, the cluster has TWO defaults and Kubernetes
+# picks the newest — unpredictable. Unflag the distro's class here, as a longhorn addon-owned
+# resource, so it only happens while Longhorn is installed. Copy the distro object field-for-field
+# (StorageClass fields are immutable); only the annotation should differ. Keep the kustomization's
+# Prune=false,Delete=false: PVCs may still use the class by name. If Longhorn is removed, re-flag it.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: microk8s-hostpath # or local-path (k3s), ...
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: microk8s.io/hostpath # must match the live object exactly
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
