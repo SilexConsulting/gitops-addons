@@ -1,0 +1,79 @@
+# nonk8s
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addons-longhorn
+  namespace: argocd
+spec:
+  syncPolicy:
+    # GIT-18: never cascade-delete. The chart owns the CRDs; deleting them deletes every Longhorn
+    # Volume/Replica/Engine — i.e. every PV's data on the cluster.
+    preserveResourcesOnDeletion: true
+  generators:
+    - merge:
+        mergeKeys: [server]
+        generators:
+          - clusters:
+              values:
+                addonChart: longhorn
+                addonChartVersion: 1.12.1
+                addonChartRepository: https://charts.longhorn.io
+                addonChartNamespace: longhorn-system
+              selector:
+                matchExpressions:
+                  - key: enable_longhorn
+                    operator: In
+                    values: ['true']
+          - clusters:
+              selector:
+                matchLabels:
+                  environment: dev
+              values:
+  template:
+    metadata:
+      name: addon-{{name}}-{{values.addonChart}}
+    spec:
+      project: addons
+      # Source order matters: the private overlay patches append value files to sources/1.
+      sources:
+        - repoURL: '{{metadata.annotations.addons_repo_url}}'
+          targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+          ref: values
+          # --- Addon-owned resources (exist iff this addon is enabled) --------------------------
+          # Longhorn works out of the box (the chart creates the `longhorn` StorageClass), but backups
+          # need a backup target + credentials Secret, and scheduled snapshots/backups are
+          # RecurringJob CRs. Targets, schedules and extra StorageClasses (replica count = node
+          # count) are site-specific, so the catalogue ships none:
+          #   1. Private repo (recommended, per cluster): put them in
+          #      <private>/addons/clusters/<cluster>/longhorn/resources/ and target this appset with
+          #      gitops-private's `add-private-source-with-resources.yaml` patch.
+          #   2. Catalogue-wide default: uncomment the path below and list them in
+          #      environments/default/addons/longhorn/resources/ (see the commented examples there).
+          # path: environments/default/addons/{{values.addonChart}}/resources
+        - chart: '{{values.addonChart}}'
+          repoURL: '{{values.addonChartRepository}}'
+          targetRevision: '{{values.addonChartVersion}}'
+          helm:
+            releaseName: '{{values.addonChart}}'
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - $values/environments/default/addons/{{values.addonChart}}/values.yaml
+              - $values/environments/{{metadata.labels.environment}}/addons/{{values.addonChart}}/values.yaml
+              - $values/clusters/{{name}}/addons/{{values.addonChart}}/values.yaml
+      destination:
+        namespace: '{{values.addonChartNamespace}}'
+        name: '{{name}}'
+      syncPolicy:
+        automated: {}
+        # The namespace is created by Argo (CreateNamespace), so it exists iff the addon is enabled.
+        # longhorn-manager / CSI / instance-managers are privileged (host mounts, iSCSI): label the
+        # namespace privileged in case the cluster enforces a stricter Pod Security default.
+        managedNamespaceMetadata:
+          labels:
+            pod-security.kubernetes.io/enforce: privileged
+            pod-security.kubernetes.io/audit: privileged
+            pod-security.kubernetes.io/warn: privileged
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true # Big CRDs.
