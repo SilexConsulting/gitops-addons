@@ -28,6 +28,14 @@ spec:
                   - key: enable_mariadb_operator
                     operator: In
                     values: ['true']
+          # A merge generator needs >= 2 children; this (empty) per-env override is also where
+          # env-specific values go, and it keeps the appset valid on clusters without a private
+          # overlay that appends its own child (e.g. ivylen's pin).
+          - clusters:
+              selector:
+                matchLabels:
+                  environment: dev
+              values:
   template:
     metadata:
       name: addon-{{name}}-{{values.addonChart}}
