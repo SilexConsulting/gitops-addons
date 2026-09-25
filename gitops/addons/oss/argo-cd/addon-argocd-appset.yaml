@@ -56,3 +56,6 @@ spec:
         automated: {}
         syncOptions:
           - CreateNamespace=true
+          # GIT-26: Argo CD >= 3.3 ships an ApplicationSet CRD too large for client-side apply
+          # (last-applied annotation "Too long"), so a self-upgrade must use server-side apply.
+          - ServerSideApply=true
