@@ -1,0 +1,11 @@
+---
+# external-secrets (ESO) catalogue defaults. The chart installs the CRDs (installCRDs: true), the
+# controller, the webhook and the cert-controller. Stores (backends) are NOT configured here: they are
+# site-specific addon-owned resources (see ./resources/ and the appset comments).
+#
+# Bootstrap note: the credentials ESO uses to reach its backend (e.g. an AWS access key or a Vault
+# token/role for the ClusterSecretStore) can't themselves come from ESO. Seed that one Secret the same
+# way as other bootstrap secrets (SOPS: `make argocd-bootstrap`), then let ESO manage the rest.
+installCRDs: true
+serviceMonitor:
+  enabled: false # enable per cluster once the monitoring addon (GIT-4/GIT-22) exists

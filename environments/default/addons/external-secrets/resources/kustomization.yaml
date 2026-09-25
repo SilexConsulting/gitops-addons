@@ -1,0 +1,19 @@
+---
+# external-secrets addon-owned resources (commented-out reference setup).
+#
+# Synced by the external-secrets addon's own Application ONLY if the `path:` on the first source of
+# gitops/addons/oss/external-secrets/addons-external-secrets-appset.yaml is uncommented, so they
+# exist iff the addon is enabled. Stores are usually site-specific: copy an example into your
+# cluster's private repo (<private>/addons/clusters/<cluster>/external-secrets/resources/) instead.
+#
+# ClusterSecretStore = one backend for the whole cluster (any namespace's ExternalSecret can use it).
+# SecretStore        = namespaced; prefer it when teams must not read each other's secrets.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: "1" # after the chart's CRDs + webhook
+  argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+resources: []
+#  - clustersecretstore-aws.example.yaml         # AWS Secrets Manager
+#  - clustersecretstore-vault.example.yaml       # HashiCorp Vault (see GIT-7)
+#  - clustersecretstore-kubernetes.example.yaml  # another namespace in this cluster
