@@ -1,0 +1,13 @@
+---
+# The addresses MetalLB may hand to LoadBalancer Services.
+# Pin an individual Service to an address with the annotation
+#   metallb.universe.tf/loadBalancerIPs: 192.0.2.10   (metallb.io/loadBalancerIPs on >= v0.14)
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: default-addresspool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 192.0.2.10-192.0.2.250 # documentation range; use a block reserved for MetalLB
+  autoAssign: true # false = only Services that ask for this pool get an address from it

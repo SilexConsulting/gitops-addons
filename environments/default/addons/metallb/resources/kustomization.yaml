@@ -1,0 +1,24 @@
+---
+# MetalLB addon-owned resources (commented-out reference setup).
+#
+# Synced by the metallb addon's own Application ONLY if the `path:` on the first source of
+# gitops/addons/oss/metallb/addons-metallb-appset.yaml is uncommented, so they exist iff the addon
+# is enabled. Usually pools are site-specific: copy the examples into your cluster's private repo
+# (<private>/addons/clusters/<cluster>/metallb/resources/) instead of listing them here.
+#
+# Pick ONE announcement mode (or both, if some clients are on the nodes' L2 segment):
+#   - L2 (ARP/NDP): the LB range is in the same subnet as the nodes. Simplest; no router config.
+#   - BGP: the LB range is routed to the nodes by your router (e.g. OPNsense os-frr). Needed when the
+#     range is NOT on the nodes' subnet. Uses the native BGP backend (see ../values.yaml).
+#
+# Keep Argo from ever deleting these: losing a pool drops every LoadBalancer IP.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: "1" # after the chart's CRDs + webhook
+  argocd.argoproj.io/sync-options: Prune=false,Delete=false,SkipDryRunOnMissingResource=true
+resources: []
+#  - ipaddresspool.example.yaml
+#  - l2advertisement.example.yaml       # L2 mode
+#  - bgppeer.example.yaml               # BGP mode
+#  - bgpadvertisement.example.yaml      # BGP mode

@@ -1,0 +1,14 @@
+---
+# BGP mode: each speaker peers with your router, which then routes the pool to the nodes.
+# The router needs a matching neighbour config (remote AS = myASN, for every node IP).
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: router-peer
+  namespace: metallb-system
+spec:
+  myASN: 64501          # private ASN for the cluster
+  peerASN: 64500        # the router's ASN
+  peerAddress: 192.0.2.1 # the router, reachable from the nodes
+  peerPort: 179
+  # password: via passwordSecret (a Secret in metallb-system), never inline in Git.
