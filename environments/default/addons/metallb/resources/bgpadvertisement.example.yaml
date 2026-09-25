@@ -1,0 +1,11 @@
+---
+# BGP mode: announce the pools to the peers. An empty spec advertises every pool, one /32 per IP.
+apiVersion: metallb.io/v1beta1
+kind: BGPAdvertisement
+metadata:
+  name: default-advertise-all-pools
+  namespace: metallb-system
+spec: {}
+# spec:
+#   ipAddressPools: [default-addresspool]
+#   aggregationLength: 32

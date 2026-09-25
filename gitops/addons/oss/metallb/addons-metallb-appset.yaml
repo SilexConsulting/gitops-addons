@@ -38,6 +38,16 @@ spec:
         - repoURL: '{{metadata.annotations.addons_repo_url}}'
           targetRevision: '{{metadata.annotations.addons_repo_revision}}'
           ref: values
+          # --- Addon-owned resources (exist iff this addon is enabled) --------------------------
+          # MetalLB does nothing until it is given address pools + advertisements (CRs). Those are
+          # site-specific, so the catalogue ships none. Two ways to provide them:
+          #   1. Private repo (recommended, per cluster): put the CRs in
+          #      <private>/addons/clusters/<cluster>/metallb/resources/ and target this appset with
+          #      gitops-private's `add-private-source-with-resources.yaml` patch.
+          #   2. Catalogue-wide default (only if every cluster shares the same pools): uncomment
+          #      the path below and list the CRs in environments/default/addons/metallb/resources/
+          #      (see the commented examples there).
+          # path: environments/default/addons/{{values.addonChart}}/resources
         - chart: '{{values.addonChart}}'
           repoURL: '{{values.addonChartRepository}}'
           targetRevision: '{{values.addonChartVersion}}'
