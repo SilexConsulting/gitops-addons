@@ -1,0 +1,17 @@
+# samba-operator addon-owned resources (commented-out reference setup).
+#
+# Synced by the samba-operator addon's own Application ONLY if the `path:` on the first source of
+# gitops/addons/oss/samba-operator/addons-samba-operator-appset.yaml is uncommented, so they exist
+# iff the addon is enabled. Shares normally belong to the workload that owns the data; list here
+# only what should exist whenever the operator does — e.g. a shared users SmbSecurityConfig (its
+# users Secret is never in plain Git: SOPS / ExternalSecret from the private repo).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# The CRs depend on the chart's CRDs (first sync), and must never be pruned/deleted by Argo: an
+# SmbShare deletion tears down its smbd Deployment + Service.
+commonAnnotations:
+  argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true,Prune=false,Delete=false
+  argocd.argoproj.io/sync-wave: "10"
+resources: []
+#  - smbsecurityconfig-users.example.yaml
+#  - smbshare-dropbox.example.yaml

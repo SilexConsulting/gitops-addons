@@ -1,0 +1,14 @@
+# samba-operator (SilexConsulting/samba-operator-helm) — catalogue defaults for every cluster.
+# Chart values: https://github.com/SilexConsulting/samba-operator-helm#configuration
+#
+# The chart's defaults are upstream's: operator + kube-rbac-proxy (metrics) pinned, operator pods
+# on amd64 nodes only (upstream publishes amd64-only images), and share smbd pods also amd64 via the
+# operator's built-in default node selector. Nothing to override by default.
+#
+# Per-environment / per-cluster overrides go in the usual layers, e.g. to run on arm64 nodes with
+# your own multi-arch images:
+#   nodeArchitectures: []
+#   config:
+#     default-node-selector: '{}'
+#     smbd-container-image: registry.example.com/samba-server:v0.8
+{}

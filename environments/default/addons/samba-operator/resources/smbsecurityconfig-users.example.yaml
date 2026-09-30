@@ -1,0 +1,15 @@
+# Example: a users SmbSecurityConfig that shares in this namespace can reference with
+# `spec.securityConfig: smb-users`. The Secret it points at holds samba-container JSON:
+#   {"samba-container-config": "v0", "users": {"all_entries": [{"name": "alice", "password": "..."}]}}
+# and is NEVER committed in plain text — SOPS-encrypt it in the private repo, or deliver it with an
+# ExternalSecret (GIT-6).
+apiVersion: samba-operator.samba.org/v1alpha1
+kind: SmbSecurityConfig
+metadata:
+  name: smb-users
+  namespace: shared-files
+spec:
+  mode: user
+  users:
+    secret: smb-users
+    key: users.json

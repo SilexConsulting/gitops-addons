@@ -1,0 +1,16 @@
+# Silex's public Helm OCI registry (ghcr.io/silexconsulting/charts) — e.g. the samba-operator
+# chart (GIT-33). Argo CD only pulls Helm charts over OCI from a repository declared with
+# `enableOCI: "true"`; charts are public, so this carries no credentials and is safe in Git.
+# Apps reference it as `repoURL: ghcr.io/silexconsulting/charts` + `chart: <name>`.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: repo-ghcr-silexconsulting-charts
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: silexconsulting-charts
+  type: helm
+  url: ghcr.io/silexconsulting/charts
+  enableOCI: "true"
