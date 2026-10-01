@@ -73,6 +73,14 @@ spec:
       destination:
         namespace: '{{values.addonChartNamespace}}'
         name: '{{name}}'
+      # The chart renders the UI Service port with an explicit `nodePort: null` unless
+      # service.ui.nodePort is set; with a NodePort/LoadBalancer UI the API server allocates one,
+      # so Argo would report longhorn-frontend OutOfSync forever.
+      ignoreDifferences:
+        - kind: Service
+          name: longhorn-frontend
+          jqPathExpressions:
+            - .spec.ports[]?.nodePort
       syncPolicy:
         automated: {}
         # The namespace is created by Argo (CreateNamespace), so it exists iff the addon is enabled.
@@ -86,3 +94,4 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - ServerSideApply=true # Big CRDs.
+          - RespectIgnoreDifferences=true
