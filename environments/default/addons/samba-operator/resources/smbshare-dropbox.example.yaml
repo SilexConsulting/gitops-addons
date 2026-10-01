@@ -1,0 +1,29 @@
+# Example: a LAN drop-box share (e.g. a scanner's "scan to SMB") on an existing PVC.
+#   * Without `securityConfig` the operator uses its built-in default user sambauser / samba.
+#   * `commonConfig` with `network.publish: external` makes the operator's Service a LoadBalancer.
+#     The operator cannot set a fixed IP; for one, keep the share internal and add your own
+#     LoadBalancer Service selecting `samba-operator.samba.org/service: <share name>` — see
+#     https://github.com/SilexConsulting/samba-operator-helm#pinning-the-loadbalancer-ip
+#   * If another pod also mounts the PVC (the app consuming the drops), make it ReadWriteMany
+#     (e.g. Longhorn RWX) so the two pods may run on different nodes.
+apiVersion: samba-operator.samba.org/v1alpha1
+kind: SmbCommonConfig
+metadata:
+  name: dropbox-common
+  namespace: shared-files
+spec:
+  network:
+    publish: external
+---
+apiVersion: samba-operator.samba.org/v1alpha1
+kind: SmbShare
+metadata:
+  name: dropbox
+  namespace: shared-files
+spec:
+  commonConfig: dropbox-common
+  securityConfig: smb-users
+  readOnly: false
+  storage:
+    pvc:
+      name: dropbox-data
