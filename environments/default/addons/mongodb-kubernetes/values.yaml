@@ -1,0 +1,15 @@
+# mongodb-kubernetes (MongoDB Controllers for Kubernetes) — catalogue defaults for every cluster.
+# Chart values: https://github.com/mongodb/mongodb-kubernetes/blob/master/helm_chart/values.yaml
+#
+# The chart's defaults are fine: one operator in the addon's namespace (`mongodb`), reconciling
+# MongoDBCommunity / MongoDB resources in that namespace only, with the database ServiceAccounts
+# and Roles (mongodb-kubernetes-appdb, -database-pods) created there.
+#
+# To run databases in other namespaces, list them (comma-separated) in a per-environment /
+# per-cluster override. The chart then creates the database ServiceAccounts + Roles in each listed
+# namespace — which must already exist (Argo only creates the addon's own namespace):
+#   operator:
+#     watchNamespace: mongodb,my-app
+# Avoid `"*"`: the operator then watches every namespace, but the chart only creates the database
+# ServiceAccounts in the operator's namespace, so databases elsewhere fail to start.
+{}
